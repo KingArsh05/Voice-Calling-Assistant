@@ -11,24 +11,14 @@ sock = Sock(app)
 
 @app.route("/health")
 def health():
-    return jsonify({
-        "status": "ok",
-        "service": "voice-service"
-    }), 200
+    return jsonify({"status": "ok", "service": "voice-service"}), 200
 
 
 @app.route("/plivo/answer", methods=["GET", "POST"])
 def answer():
     xml = """<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-    <Speak>Connected to AI Assistant.</Speak>
-
-    <Stream
-        keepCallAlive="true"
-        bidirectional="true"
-        contentType="audio/x-mulaw;rate=8000">
-        wss://voice-calling-assistant-sl9u.onrender.com/stream
-    </Stream>
+    <Speak>Hello, your Plivo connection is working.</Speak>
 </Response>
 """
     return Response(xml, mimetype="application/xml")
@@ -48,4 +38,3 @@ def stream(ws):
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8001))
     app.run(host="0.0.0.0", port=port, debug=True)
-
