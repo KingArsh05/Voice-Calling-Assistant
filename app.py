@@ -26,5 +26,5 @@ def stream(ws):
 
 
 if __name__ == "__main__":
-    port = int(os.getenv("PORT"))
+    port = int(os.getenv("PORT", 8001))
     app.run(host="0.0.0.0", port=port, debug=True)
