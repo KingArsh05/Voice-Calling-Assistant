@@ -3,10 +3,16 @@ from flask import Flask, jsonify
 from flask_sock import Sock
 from dotenv import load_dotenv
 
+from routes.plivo import plivo_bp
+from websocket.audio_stream import handle_stream
+
 load_dotenv()
 
 app = Flask(__name__)
 sock = Sock(app)
+
+# Register Blueprints
+app.register_blueprint(plivo_bp, url_prefix="/plivo")
 
 
 @app.route("/health", methods=["GET"])
@@ -16,15 +22,9 @@ def health():
 
 @sock.route("/stream")
 def stream(ws):
-    while True:
-        message = ws.receive()
-        if message is None:
-            break
-        print("Received message:", message)
+    handle_stream(ws)
 
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT"))
     app.run(host="0.0.0.0", port=port, debug=True)
-
-
