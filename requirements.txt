@@ -3,7 +3,7 @@ flask-sock==0.7.0
 gevent==26.8.0
 gevent-websocket==0.10.1
 gunicorn==26.2.0
-packaging
+packaging==26.3
 plivo==4.62.0
 python-dotenv==1.2.3
 requests==2.34.2
