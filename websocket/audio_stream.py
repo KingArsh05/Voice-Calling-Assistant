@@ -42,19 +42,27 @@ def handle_stream(ws):
     media_count = 0
 
     while True:
-        message = ws.receive()
+        try:
+            message = ws.receive()
+        except Exception as e:
+            print(f"[WEBSOCKET RECEIVE EXCEPTION] {e}", flush=True)
+            break
 
         if message is None:
-            print("[WEBSOCKET CLOSED] WebSocket connection closed.", flush=True)
+            print("[WEBSOCKET CLOSED] ws.receive() returned None (socket closed by remote)", flush=True)
             break
 
         try:
             event = json.loads(message)
         except Exception as e:
-            print(f"[WEBSOCKET ERROR] Failed to parse message: {e}", flush=True)
+            print(f"[WEBSOCKET ERROR] Failed to parse message ({e}): {message[:100]}", flush=True)
             continue
 
         event_name = event.get("event")
+        # Log first event details
+        if media_count == 0 and event_name != "media":
+            print(f"[WEBSOCKET EVENT] Received event: {event}", flush=True)
+
 
         # 1. Call connected and stream started
         if event_name == "start":
