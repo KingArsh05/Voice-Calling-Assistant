@@ -36,43 +36,46 @@ def handle_stream(ws):
     """
     Handles the live bidirectional WebSocket audio stream from Plivo.
     """
+    print("[WEBSOCKET CONNECTED] Plivo client opened WebSocket connection", flush=True)
     stream_id = None
     call_id = None
+    media_count = 0
 
     while True:
         message = ws.receive()
 
         if message is None:
-            print("WebSocket closed by client.")
+            print("[WEBSOCKET CLOSED] WebSocket connection closed.", flush=True)
             break
 
-        event = json.loads(message)
+        try:
+            event = json.loads(message)
+        except Exception as e:
+            print(f"[WEBSOCKET ERROR] Failed to parse message: {e}", flush=True)
+            continue
+
         event_name = event.get("event")
 
         # 1. Call connected and stream started
         if event_name == "start":
             stream_id = event.get("start", {}).get("streamId")
             call_id = event.get("start", {}).get("callId")
-            print(f"[STREAM START] streamId={stream_id}, callId={call_id}")
+            print(f"[STREAM START] streamId={stream_id}, callId={call_id}", flush=True)
 
         # 2. Audio chunks coming in from caller (8000Hz mulaw)
         elif event_name == "media":
             payload = event.get("media", {}).get("payload")
             audio_bytes = base64.b64decode(payload)
-            # print(f"[AUDIO] Received {len(audio_bytes)} bytes from caller")
-
-            # AI PIPELINE STEP:
-            # - Send audio_bytes to STT (Speech-to-Text)
-            # - Send transcribed text to LLM
-            # - Generate TTS audio response (in mulaw 8000Hz format)
-            # - Send back to caller: play_audio(ws, tts_audio_bytes, stream_id)
+            media_count += 1
+            if media_count % 50 == 1:
+                print(f"[AUDIO] Received packet #{media_count} ({len(audio_bytes)} bytes)", flush=True)
 
         # 3. Caller pressed a phone key
         elif event_name == "dtmf":
             digit = event.get("dtmf", {}).get("digit")
-            print(f"[DTMF] User pressed key: {digit}")
+            print(f"[DTMF] User pressed key: {digit}", flush=True)
 
         # 4. Call ended
         elif event_name == "stop":
-            print(f"[STREAM STOP] Call ended for streamId={stream_id}")
+            print(f"[STREAM STOP] Call ended for streamId={stream_id}", flush=True)
             break
