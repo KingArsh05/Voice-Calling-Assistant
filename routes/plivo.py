@@ -12,12 +12,11 @@ def answer():
     ).strip()
 
     xml = f"""<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-    <Speak>Connected to AI Assistant.</Speak>
-    <Stream bidirectional="true" keepCallAlive="true" contentType="audio/x-mulaw;rate=8000">{websocket_url}</Stream>
-</Response>"""
+                <Response>
+                    <Speak>Connected to AI Assistant.</Speak>
+                    <Stream bidirectional="true" keepCallAlive="true" contentType="audio/x-mulaw;rate=8000">{websocket_url}</Stream>
+                </Response>
+            """
 
     return Response(xml.strip(), mimetype="application/xml")
-
-
-
+    
