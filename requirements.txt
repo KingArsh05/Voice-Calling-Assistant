@@ -7,3 +7,4 @@ packaging==26.3
 plivo==4.62.0
 python-dotenv==1.2.3
 requests==2.34.2
+websocket==0.2.1

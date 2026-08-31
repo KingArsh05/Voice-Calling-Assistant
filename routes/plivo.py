@@ -6,12 +6,8 @@ plivo_bp = Blueprint("plivo", __name__)
 
 @plivo_bp.route("/answer", methods=["GET", "POST"])
 def answer():
-    # Live Render domain: voice-calling-assistant-sl9u.onrender.com
     websocket_url = os.getenv(
         "WEBSOCKET_URL", "wss://voice-calling-assistant-sl9u.onrender.com/stream"
-    )
-    base_url = os.getenv(
-        "BASE_URL", "https://voice-calling-assistant-sl9u.onrender.com"
     )
 
     xml = f"""<?xml version="1.0" encoding="UTF-8"?>
@@ -20,11 +16,11 @@ def answer():
     <Stream
         keepCallAlive="true"
         bidirectional="true"
-        contentType="audio/x-mulaw;rate=8000"
-        statusCallbackUrl="{base_url}/stream">
+        contentType="audio/x-mulaw;rate=8000">
         {websocket_url}
     </Stream>
 </Response>"""
 
     return Response(xml.strip(), mimetype="application/xml")
+
 
